@@ -41,38 +41,31 @@ def Remove_from_dict(dict,key,value,list):
 
 
 def Plot_connections():
-	import numpy as np
 	import matplotlib.pyplot as plt
-	import networkx as nx
-
-	# prepare a random graph with n nodes and m edges
-	n = 16
-	m = 60
-	G = nx.gnm_random_graph(n, m)
-	# prepare a circular layout of nodes
-	pos = nx.circular_layout(G)
-	# define the color to select from the color map
-	# as n numbers evenly spaced between color map limits
-	node_color = map(int, np.linspace(0, 255, n))
-	# draw the nodes, specifying the color map and the list of color
-	nx.draw_networkx_nodes(G, pos,
-                       node_color=node_color, cmap=plt.cm.hsv)
-	# add the labels inside the nodes
-	nx.draw_networkx_labels(G, pos)
-	# draw the edges, using alpha parameter to make them lighter
-	nx.draw_networkx_edges(G, pos, alpha=0.4)
-	# turn off axis elements
-	plt.axis('off')
+	
 	plt.show()
 
 
 
+def Different_person_giving(dict):
+	for k,v in dict.iteritems():
+		if k==v:
+			return False
+	return True
 
+def Everyone_giving_receiving(dict,number):
+	
+	if (len(list(set(dict.keys())))==number and len(list(set(dict.values())))==number):
+		return True
+	else:
+		return False#
+	
 
 
 Families_list=dict_to_list(Families)
 Families_receive=Families.copy()
 Families_give=Families.copy()
+Results={}
 
 for person in Families_list: 
 	Random_family_receive,Family_list_receive=Choose_family(Families_receive)
@@ -93,6 +86,9 @@ for person in Families_list:
 
 	Families_give=Remove_from_dict(Families_give,Random_family_give,Random_person_give,Family_list_give)
 
-	print Random_person_receive,"will reveive from",Random_person_give
+	Results[Random_person_receive]=Random_person_give
+	
 
-#Plot_connections()
+
+print "different person :",Different_person_giving(Results)
+print "Everyone giving and receiving :",Everyone_giving_receiving(Results,len(Families_list))
