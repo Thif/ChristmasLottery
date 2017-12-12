@@ -1,10 +1,49 @@
 #!/usr/bin/python
 
 import random
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+GMAIL_ADDRESS=""
+GMAIL_PASSWORD=""
+SENDER_NAME=""
 
 Families={'Forest':['Emeline','Thibaut'],'TroisFontaine':['Marine','Francois'],'Forest2':['Michel','Nathalie'],'Forest3':['Philippine'],'Forest4':['Maxence','Alix']
 ,'Delforges':['Mamou'],'Forest5':['Bonne Maman']}
 
+def send_email(receiver_email,receiver_name,gift_name):
+
+	
+	msg = MIMEMultipart('alternative')
+	msg['Subject'] = "Christmas Lottery Result"
+	msg['From'] = SENDER_NAME
+	msg['To'] = receiver_email
+	
+	# Create the body of the message (a plain-text and an HTML version).
+
+	html = """\
+	<html>
+	  <head></head>
+	  <body>
+	    <h2>Hi """ +str(receiver_name)+"""!</h2><br>
+	       <h4><i>The christmas lottery has picked someone for you :)
+	       This year you have picked :</i></h4>
+	       <h2><font color="red">""" +str(gift_name)+"""</font></h2>
+	    <img src=http://gif.toutimages.com/images/fete/noel/noel_018.gif >
+	  </body>
+	</html>
+	"""
+
+	part = MIMEText(html, 'html')
+	msg.attach(part)
+
+	s = smtplib.SMTP('smtp.gmail.com:587')
+	s.ehlo()
+	s.starttls()
+	s.login(GMAIL_ADDRESS, GMAIL_PASSWORD)
+	s.sendmail(GMAIL_ADDRESS, receiver_email, msg.as_string())
+	s.quit()
 
 def dict_to_list(dict):
 	list=[]
@@ -60,18 +99,22 @@ def Everyone_giving_receiving(dict,number):
 	else:
 		return False#
 	
-
+def Send_emails_to_everyone(dict):
+	for k,v in dict.iteritems():
+		send_email("thi.forest@gmail.com",k,v)	
+	return
 
 Families_list=dict_to_list(Families)
 Families_receive=Families.copy()
 Families_give=Families.copy()
 Results={}
 
-for person in Families_list: 
+for person in Families_list:
+	print Families_give,Families_receive
 	Random_family_receive,Family_list_receive=Choose_family(Families_receive)
-		
+
 	Random_person_receive=random.choice(Family_list_receive)
-	
+
 	Families_receive=Remove_from_dict(Families_receive,Random_family_receive,Random_person_receive,Family_list_receive)
 
 	
@@ -92,3 +135,6 @@ for person in Families_list:
 
 print "different person :",Different_person_giving(Results)
 print "Everyone giving and receiving :",Everyone_giving_receiving(Results,len(Families_list))
+
+Send_emails_to_everyone(Results)
+print "email sent"
